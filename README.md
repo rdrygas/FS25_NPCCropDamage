@@ -160,3 +160,10 @@ The mod is intended for single-player gameplay. `modDesc.xml` is configured as f
 - added compensation calculation based on the area of damage, `literPerSqm` and the current highest selling price;
 - added the `PENALTY_MULTIPLIER` coefficient;
 - added the financial entry ‘NPC crop damage’.
+
+## Screenshots
+
+![Farmland owned by NPC -- soybeans](screenshots/20260817193030_1.jpg)
+![A warning is displayed and a financial penalty](screenshots/20260817193043_1.jpg)
+![Farmland owned by NPC -- potatoes](screenshots/20260817193357_1.jpg)
+![A warning is not displayed](screenshots/20260817193408_1.jpg)

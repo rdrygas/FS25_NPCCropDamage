@@ -29,6 +29,20 @@ Takie rozwiązanie ma dwie zalety:
 1. zachowuje zasady niszczenia zdefiniowane przez grę lub mapę;
 2. ogranicza wielokrotne naliczanie odszkodowania za ten sam, już zniszczony fragment uprawy.
 
+## Ostrzeżenie
+
+Gdy pojazd gracza **faktycznie zacznie niszczyć uprawę na polu NPC**, wyświetlany jest komunikat:
+
+> Uwaga! Niszczysz uprawy na polu NPC. Zostaniesz obciążony kosztami szkód.
+
+Dostępna jest również wersja angielska:
+
+> Warning! You are damaging crops on an NPC field. You will be charged for the damage.
+
+Teksty znajdują się w sekcji `l10n` pliku `modDesc.xml`, więc można łatwo dodać kolejne języki.
+
+Komunikat nie jest generowany przy samym wjechaniu na pole. Musi zostać wykryta nowa powierzchnia uprawy, którą można rzeczywiście zniszczyć. Aby wiele kół i kolejne klatki animacji nie tworzyły serii komunikatów, nowe ostrzeżenie pojawia się dopiero po przerwie w niszczeniu.
+
 ## Obliczanie kosztu szkód
 
 Domyślnie koszt jest wyliczany według wzoru:
@@ -58,17 +72,17 @@ Odszkodowanie jest więc szacunkową wartością potencjalnie utraconego plonu, 
 
 ## Tabela działania
 
-| Sytuacja | Niszczenie upraw | Kara finansowa |
-|---|:---:|:---:|
-| Własne pole, zwykłe koła | zgodnie z grą | nie przez ten mod |
-| Pole NPC, zwykłe koła, podatna uprawa | tak | tak |
-| Pole NPC, opony pielęgnacyjne | nie | nie |
-| Pole NPC, pracownik AI | nie przez ten mod | nie |
-| Pole NPC, wyłączone „Niszczenie upraw” | nie | nie |
-| Pole NPC, już zniszczony fragment | brak nowych szkód | nie |
-| Pole NPC, ziemniaki | nie* | nie |
-| Pole NPC, buraki cukrowe | nie* | nie |
-| Pole NPC, buraki czerwone | nie* | nie |
+| Sytuacja | Niszczenie upraw | Kara finansowa | Ostrzeżenie |
+|---|:---:|:---:|:---:|
+| Własne pole, zwykłe koła | zgodnie z grą | nie przez ten mod | nie |
+| Pole NPC, zwykłe koła, podatna uprawa | tak | tak | tak |
+| Pole NPC, opony pielęgnacyjne | nie | nie | nie |
+| Pole NPC, pracownik AI | nie przez ten mod | nie | nie |
+| Pole NPC, wyłączone „Niszczenie upraw” | nie | nie | nie |
+| Pole NPC, już zniszczony fragment | brak nowych szkód | nie | nie |
+| Pole NPC, ziemniaki | nie* | nie | nie |
+| Pole NPC, buraki cukrowe | nie* | nie | nie |
+| Pole NPC, buraki czerwone | nie* | nie | nie |
 
 \* Mod respektuje definicje podstawowej gry. Jeżeli dany typ rośliny nie ma stanów oznaczonych jako podatne na zniszczenie przez koła, mod nie wymusza jego niszczenia.
 
@@ -91,6 +105,16 @@ Przykłady:
 - `0.5` — 50% oszacowanej wartości szkody;
 - `1.0` — 100% oszacowanej wartości szkody;
 - `2.0` — 200% oszacowanej wartości szkody.
+
+### Ponowne wyświetlenie ostrzeżenia
+
+```lua
+NPCCropDamage.WARNING_RESET_MS = 3000
+```
+
+Wartość określa, po ilu milisekundach bez nowych szkód następne niszczenie zostanie potraktowane jako nowe zdarzenie i ponownie wyświetli ostrzeżenie.
+
+Domyślnie jest to **3000 ms**, czyli 3 sekundy.
 
 ### Diagnostyka
 
@@ -135,6 +159,14 @@ Mod jest przeznaczony do gry jednoosobowej. `modDesc.xml` ma ustawione:
 ```
 
 ## Historia zmian
+
+### 1.1.0.0
+
+- dodano ostrzeżenie wyświetlane przy rozpoczęciu faktycznego niszczenia uprawy na polu NPC;
+- dodano tłumaczenie ostrzeżenia na język polski i angielski;
+- dodano mechanizm zapobiegający wielokrotnemu wyświetlaniu komunikatu przez kolejne koła i klatki;
+- dodano konfigurowalny `WARNING_RESET_MS`;
+- oznaczono mod jako przeznaczony do gry jednoosobowej.
 
 ### 1.0.0.0
 

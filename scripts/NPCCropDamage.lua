@@ -25,6 +25,10 @@ NPCCropDamage.CHARGE_INTERVAL_MS = 1500
 -- Selling-point prices are not worth scanning every wheel update.
 NPCCropDamage.PRICE_CACHE_MS = 5000
 
+-- A new warning is shown only after this many milliseconds without any newly
+-- destroyed crop. This prevents one notification per wheel/frame.
+NPCCropDamage.WARNING_RESET_MS = 3000
+
 -- Set to true to print detailed diagnostic information to log.txt.
 NPCCropDamage.DEBUG = false
 
@@ -35,6 +39,7 @@ NPCCropDamage.pendingCosts = {}
 NPCCropDamage.chargeTimer = 0
 NPCCropDamage.priceCache = {}
 NPCCropDamage.fruitAreaTools = {}
+NPCCropDamage.lastDamageTimeByVehicle = {}
 
 local function debugPrint(formatString, ...)
     if NPCCropDamage.DEBUG then
@@ -292,6 +297,31 @@ local function addPendingCost(farmId, cost)
     NPCCropDamage.pendingCosts[farmId] = (NPCCropDamage.pendingCosts[farmId] or 0) + cost
 end
 
+local function showDamageWarning(vehicle)
+    if g_currentMission == nil
+        or g_currentMission.addIngameNotification == nil
+        or g_i18n == nil then
+        return
+    end
+
+    local rootVehicle = getRootVehicle(vehicle)
+    if rootVehicle == nil then
+        return
+    end
+
+    local now = g_time or 0
+    local lastDamageTime = NPCCropDamage.lastDamageTimeByVehicle[rootVehicle]
+
+    if lastDamageTime == nil or now - lastDamageTime >= NPCCropDamage.WARNING_RESET_MS then
+        g_currentMission:addIngameNotification(
+            FSBaseMission.INGAME_NOTIFICATION_CRITICAL,
+            g_i18n:getText("warning_npcCropDamage")
+        )
+    end
+
+    NPCCropDamage.lastDamageTimeByVehicle[rootVehicle] = now
+end
+
 local function flushPendingCosts()
     if g_server == nil or g_currentMission == nil or NPCCropDamage.moneyType == nil then
         return
@@ -355,12 +385,16 @@ function NPCCropDamage.onWheelDestructionUpdate(wheelDestruction, dt, allowFolia
 
         if isNpcFieldAtWorldPosition(x0, z0) then
             -- Measure the still-destructible crop BEFORE changing its state.
-            local cost = calculateDamageCost(x0, z0, x1, z1, x2, z2)
+            local cost, damagedAreaSqm = calculateDamageCost(x0, z0, x1, z1, x2, z2)
 
             -- Reuse GIANTS' own wheel-destruction function so fruit states,
             -- field restrictions and map-specific fruit definitions are handled
             -- in the same way as vanilla crop destruction.
             wheelDestruction:destroyFruitArea(x0, z0, x1, z1, x2, z2)
+
+            if damagedAreaSqm > 0 then
+                showDamageWarning(vehicle)
+            end
 
             if cost > 0 then
                 addPendingCost(getActiveFarmId(vehicle), cost)
@@ -374,6 +408,7 @@ function NPCCropDamage:loadMap(mapName)
     self.chargeTimer = 0
     self.priceCache = {}
     self.fruitAreaTools = {}
+    self.lastDamageTimeByVehicle = {}
 
     self.moneyType = MoneyType.register("other", "finance_npcCropDamage")
 
@@ -401,6 +436,7 @@ function NPCCropDamage:deleteMap()
     self.pendingCosts = {}
     self.priceCache = {}
     self.fruitAreaTools = {}
+    self.lastDamageTimeByVehicle = {}
 end
 
 WheelDestruction.update = Utils.appendedFunction(

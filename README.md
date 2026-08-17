@@ -57,17 +57,17 @@ Compensation is therefore an estimated value of the potentially lost yield, rath
 
 ## Behaviour Table
 
-| Situation | Crop destruction | Financial penalty |
-|---|:---:|:---:|
-| Own field, standard wheels | As per the game | Not via this mod |
-| NPC field, standard wheels, vulnerable crop | Yes | Yes |
-| NPC field, cultivation tyres | no | no |
-| NPC field, AI worker | not via this mod | no |
-| NPC field, ‘Crop Destruction’ disabled | no | no |
-| NPC field, already damaged section | no new damage | no |
-| NPC field, potatoes | no* | no |
-| NPC field, sugar beet | no* | no |
-| NPC field, red beetroot | no* | no |
+| Situation | Crop damage | Financial penalty | Warning |
+|---|:---:|:---:|:---:|
+| Own field, standard wheels | as per the game | not via this mod | no |
+| NPC field, standard wheels, vulnerable crop | yes | yes | yes |
+| NPC field, cultivation tyres | no | no | no |
+| NPC field, AI worker | not via this mod | no | no |
+| NPC field, ‘Crop destruction’ disabled | no | no | no |
+| NPC field, section already destroyed | no new damage | no | no |
+| NPC field, potatoes | no* | no | no |
+| NPC field, sugar beet | no* | no | no |
+| NPC field, red beetroot | no* | no | no |
 
 \* The mod respects the base game’s definitions. If a particular crop type does not have states marked as susceptible to damage from wheels, the mod does not force it to be damaged.
 
@@ -90,6 +90,16 @@ Examples:
 - `0.5` — 50% of the estimated value of the damage;
 - `1.0` — 100% of the estimated value of the damage;
 - `2.0` — 200% of the estimated value of the damage.
+
+### Displaying the warning again
+
+```lua
+NPCCropDamage.WARNING_RESET_MS = 3000
+```
+
+This value specifies the number of milliseconds without new damage after which the next instance of damage will be treated as a new event and the warning will be displayed again.
+
+By default, this is **3000 ms**, i.e. 3 seconds.
 
 ### Diagnostics
 
@@ -129,16 +139,24 @@ The current version has been developed based on the FS25 scripting API **v1.20.0
 The mod is intended for single-player gameplay. `modDesc.xml` is configured as follows:
 
 ```xml
-<multiplayer supported='false'/>
+<multiplayer supported="false"/>
 ```
 
 ## Change log
 
+### 1.1.0.0
+
+- Added a warning displayed when the actual destruction of crops on an NPC’s field begins;
+- Added translations of the warning into Polish and English;
+- Added a mechanism to prevent the message from being displayed multiple times by successive wheels and frames;
+- added a configurable `WARNING_RESET_MS`;
+- marked the mod as intended for single-player gameplay.
+
 ### 1.0.0.0
 
 - first version;
-- standard crop damage caused by wheels has been extended to NPC fields;
-- limited the effect to player-controlled vehicles;
-- added calculation of compensation based on the area of damage, `literPerSqm` and the highest current selling price;
+- extended standard crop destruction by wheels to NPC fields;
+- limited functionality to player-controlled vehicles;
+- added compensation calculation based on the area of damage, `literPerSqm` and the current highest selling price;
 - added the `PENALTY_MULTIPLIER` coefficient;
-- added the financial entry “NPC crop damage”.
+- added the financial entry ‘NPC crop damage’.

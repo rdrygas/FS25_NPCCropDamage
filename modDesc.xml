@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<modDesc descVersion="105">
+    <author>Robert Drygas / ChatGPT</author>
+    <version>1.0.0.0</version>
+
+    <title>
+        <en>NPC Crop Damage</en>
+        <pl>Niszczenie upraw NPC</pl>
+    </title>
+
+    <description>
+        <en><![CDATA[
+Allows player-controlled vehicles to destroy crops on NPC-owned fields when crop destruction is enabled.
+The player is charged compensation based on the newly damaged crop area, the crop's liters per square metre and the highest current selling price.
+        ]]></en>
+        <pl><![CDATA[
+Pozwala pojazdom kierowanym przez gracza niszczyć uprawy na polach NPC, gdy w ustawieniach gry włączone jest niszczenie upraw.
+Gracz płaci odszkodowanie obliczane na podstawie nowo zniszczonej powierzchni, plonu danej uprawy w litrach na metr kwadratowy oraz najwyższej aktualnej ceny sprzedaży.
+        ]]></pl>
+    </description>
+
+    <multiplayer supported="true"/>
+
+    <iconFilename>mod_icon.dds</iconFilename>
+
+    <extraSourceFiles>
+        <sourceFile filename="scripts/NPCCropDamage.lua"/>
+    </extraSourceFiles>
+
+    <l10n>
+        <text name="finance_npcCropDamage">
+            <en>NPC crop damage</en>
+            <pl>Szkody w uprawach NPC</pl>
+        </text>
+    </l10n>
+</modDesc>

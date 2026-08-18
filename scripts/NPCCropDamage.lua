@@ -41,12 +41,16 @@ NPCCropDamage.priceCache = {}
 NPCCropDamage.fruitAreaTools = {}
 NPCCropDamage.lastDamageTimeByVehicle = {}
 
+-- Debug print function. Only prints if NPCCropDamage.DEBUG is true.
 local function debugPrint(formatString, ...)
     if NPCCropDamage.DEBUG then
         Logging.info("[%s] %s", NPCCropDamage.MOD_NAME, string.format(formatString, ...))
     end
 end
 
+-- Get the root vehicle of the given vehicle. 
+-- If the vehicle is a trailer or implements, this returns the main tractor or truck. 
+-- If the vehicle is already a root vehicle, it returns itself. Returns nil if the input is nil.
 local function getRootVehicle(vehicle)
     if vehicle == nil then
         return nil
@@ -59,6 +63,8 @@ local function getRootVehicle(vehicle)
     return vehicle
 end
 
+-- Check if the given vehicle is player-controlled. 
+-- Returns true if the vehicle is controlled by a player, false otherwise.
 local function isPlayerControlledVehicle(vehicle)
     local rootVehicle = getRootVehicle(vehicle)
     if rootVehicle == nil or rootVehicle.getIsControlled == nil then
@@ -78,6 +84,8 @@ local function isPlayerControlledVehicle(vehicle)
     return true
 end
 
+-- Get the farm ID of the player controlling the given vehicle. 
+-- Returns nil if the vehicle is not player-controlled or has no active farm.
 local function getActiveFarmId(vehicle)
     local rootVehicle = getRootVehicle(vehicle)
     if rootVehicle ~= nil and rootVehicle.getActiveFarm ~= nil then
@@ -91,6 +99,8 @@ local function getActiveFarmId(vehicle)
     return nil
 end
 
+-- Check if the given world position is on an NPC-owned field. 
+-- Returns true if the position is on a field that has no owner farm, false otherwise.
 local function isNpcFieldAtWorldPosition(x, z)
     if g_farmlandManager == nil then
         return false
@@ -111,6 +121,7 @@ local function isNpcFieldAtWorldPosition(x, z)
     return isOnField == true or (type(isOnField) == "number" and isOnField > 0)
 end
 
+-- Get or create a DensityMapModifier and DensityMapFilter for the given fruit type.
 local function getFruitAreaTool(fruitDesc)
     local fruitTypeIndex = fruitDesc.index
     local tool = NPCCropDamage.fruitAreaTools[fruitTypeIndex]
@@ -152,6 +163,7 @@ local function getFruitAreaTool(fruitDesc)
     return tool
 end
 
+-- Add the fruit type to the candidates table if it is not already present and has a valid terrain data plane.
 local function addFruitCandidate(candidates, fruitTypeIndex)
     if fruitTypeIndex == nil or candidates[fruitTypeIndex] then
         return
@@ -167,6 +179,8 @@ local function addFruitCandidate(candidates, fruitTypeIndex)
     end
 end
 
+-- Get the fruit types that are present in the given parallelogram area. 
+-- The area is defined by three corners (x0, z0), (x1, z1), (x2, z2). The fourth corner is calculated automatically.
 local function getFruitCandidates(x0, z0, x1, z1, x2, z2)
     -- The fourth corner of the parallelogram.
     local x3 = x1 + x2 - x0
@@ -191,6 +205,8 @@ local function getFruitCandidates(x0, z0, x1, z1, x2, z2)
     return candidates
 end
 
+-- Get the maximum current price per liter for the given fill type index. 
+-- The price is cached for PRICE_CACHE_MS milliseconds to avoid scanning all selling points every frame.
 local function getMaxCurrentPrice(fillTypeIndex)
     if fillTypeIndex == nil or g_currentMission == nil then
         return 0
@@ -234,6 +250,7 @@ local function getMaxCurrentPrice(fillTypeIndex)
     return maxPrice
 end
 
+-- Calculate the total cost of the crop damage in the given parallelogram area.
 local function calculateDamageCost(x0, z0, x1, z1, x2, z2)
     local totalCost = 0
     local totalAreaSqm = 0
@@ -289,6 +306,8 @@ local function calculateDamageCost(x0, z0, x1, z1, x2, z2)
     return totalCost, totalAreaSqm
 end
 
+-- Add the cost to the pending costs for the given farm. 
+-- The actual money deduction is performed later in flushPendingCosts().
 local function addPendingCost(farmId, cost)
     if farmId == nil or farmId == FarmManager.SPECTATOR_FARM_ID or cost <= 0 then
         return
@@ -297,6 +316,8 @@ local function addPendingCost(farmId, cost)
     NPCCropDamage.pendingCosts[farmId] = (NPCCropDamage.pendingCosts[farmId] or 0) + cost
 end
 
+-- Show a warning message to the player if they have damaged NPC crops. 
+-- The message is shown only once per WARNING_RESET_MS milliseconds.
 local function showDamageWarning(vehicle)
     if g_currentMission == nil
         or g_currentMission.addIngameNotification == nil
@@ -322,6 +343,8 @@ local function showDamageWarning(vehicle)
     NPCCropDamage.lastDamageTimeByVehicle[rootVehicle] = now
 end
 
+-- Flush the pending costs to the farms and reset the internal state. 
+-- This is called periodically to avoid updating the money HUD every frame.
 local function flushPendingCosts()
     if g_server == nil or g_currentMission == nil or NPCCropDamage.moneyType == nil then
         return

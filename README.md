@@ -144,14 +144,6 @@ The mod is intended for single-player gameplay. `modDesc.xml` is configured as f
 
 ## Change log
 
-### 1.1.0.0
-
-- Added a warning displayed when the actual destruction of crops on an NPC’s field begins;
-- Added translations of the warning into Polish and English;
-- Added a mechanism to prevent the message from being displayed multiple times by successive wheels and frames;
-- added a configurable `WARNING_RESET_MS`;
-- marked the mod as intended for single-player gameplay.
-
 ### 1.0.0.0
 
 - first version;
@@ -160,6 +152,14 @@ The mod is intended for single-player gameplay. `modDesc.xml` is configured as f
 - added compensation calculation based on the area of damage, `literPerSqm` and the current highest selling price;
 - added the `PENALTY_MULTIPLIER` coefficient;
 - added the financial entry ‘NPC crop damage’.
+
+### 1.1.0.0
+
+- Added a warning displayed when the actual destruction of crops on an NPC’s field begins;
+- Added translations of the warning into Polish and English;
+- Added a mechanism to prevent the message from being displayed multiple times by successive wheels and frames;
+- added a configurable `WARNING_RESET_MS`;
+- marked the mod as intended for single-player gameplay.
 
 ## Screenshots
 

@@ -160,14 +160,6 @@ Mod jest przeznaczony do gry jednoosobowej. `modDesc.xml` ma ustawione:
 
 ## Historia zmian
 
-### 1.1.0.0
-
-- dodano ostrzeżenie wyświetlane przy rozpoczęciu faktycznego niszczenia uprawy na polu NPC;
-- dodano tłumaczenie ostrzeżenia na język polski i angielski;
-- dodano mechanizm zapobiegający wielokrotnemu wyświetlaniu komunikatu przez kolejne koła i klatki;
-- dodano konfigurowalny `WARNING_RESET_MS`;
-- oznaczono mod jako przeznaczony do gry jednoosobowej.
-
 ### 1.0.0.0
 
 - pierwsza wersja;
@@ -176,3 +168,11 @@ Mod jest przeznaczony do gry jednoosobowej. `modDesc.xml` ma ustawione:
 - dodano naliczanie odszkodowania na podstawie powierzchni szkód, `literPerSqm` oraz najwyższej aktualnej ceny sprzedaży;
 - dodano współczynnik `PENALTY_MULTIPLIER`;
 - dodano wpis finansowy „Szkody w uprawach NPC” / „NPC crop damage”.
+
+### 1.1.0.0
+
+- dodano ostrzeżenie wyświetlane przy rozpoczęciu faktycznego niszczenia uprawy na polu NPC;
+- dodano tłumaczenie ostrzeżenia na język polski i angielski;
+- dodano mechanizm zapobiegający wielokrotnemu wyświetlaniu komunikatu przez kolejne koła i klatki;
+- dodano konfigurowalny `WARNING_RESET_MS`;
+- oznaczono mod jako przeznaczony do gry jednoosobowej.

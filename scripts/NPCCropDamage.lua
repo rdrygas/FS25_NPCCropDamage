@@ -403,6 +403,7 @@ function NPCCropDamage.onWheelDestructionUpdate(wheelDestruction, dt, allowFolia
     end
 end
 
+-- Called when the map is loaded. Initialize internal state and register a new money type.
 function NPCCropDamage:loadMap(mapName)
     self.pendingCosts = {}
     self.chargeTimer = 0
@@ -419,6 +420,7 @@ function NPCCropDamage:loadMap(mapName)
     )
 end
 
+-- Called every frame. Accumulate the pending costs and charge the player at regular intervals.
 function NPCCropDamage:update(dt)
     if g_server == nil then
         return
@@ -431,6 +433,7 @@ function NPCCropDamage:update(dt)
     end
 end
 
+-- Called when the map is unloaded or the game is exited. Clear all internal state to avoid memory leaks.
 function NPCCropDamage:deleteMap()
     flushPendingCosts()
     self.pendingCosts = {}
@@ -439,9 +442,13 @@ function NPCCropDamage:deleteMap()
     self.lastDamageTimeByVehicle = {}
 end
 
+-- Hook into the vanilla WheelDestruction:update() function. 
+-- The original function is called first, then our logic is executed. 
+-- This allows the vanilla function to handle owned fields, while we handle NPC-owned fields.
 WheelDestruction.update = Utils.appendedFunction(
     WheelDestruction.update,
     NPCCropDamage.onWheelDestructionUpdate
 )
 
+-- Register the mod event listener to receive loadMap, update, and deleteMap events.
 addModEventListener(NPCCropDamage)

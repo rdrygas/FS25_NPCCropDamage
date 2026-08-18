@@ -331,8 +331,9 @@ local function showDamageWarning(vehicle)
     end
 
     local now = g_time or 0
-    local lastDamageTime = NPCCropDamage.lastDamageTimeByVehicle[rootVehicle]
+    local lastDamageTime = NPCCropDamage.lastDamageTimeByVehicle[rootVehicle] -- If the vehicle has not damaged crops before, lastDamageTime will be nil.
 
+    -- Show the warning only if enough time has passed since the last damage event.
     if lastDamageTime == nil or now - lastDamageTime >= NPCCropDamage.WARNING_RESET_MS then
         g_currentMission:addIngameNotification(
             FSBaseMission.INGAME_NOTIFICATION_CRITICAL,

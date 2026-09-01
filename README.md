@@ -15,6 +15,7 @@ The mod has been designed to be as minimal an extension of the base game’s mec
 - it ignores AI workers;
 - it respects maintenance tyres / wheels that the base game does not treat as damaging to crops;
 - it destroys only those types and growth stages of crops that the base game designates as susceptible to damage from wheels;
+- **does not calculate damage for withered or dead crops (`withered`, `dead`)**, as these no longer represent the value of a potential harvest;
 - it does not force the destruction of root crops that are not subject to this mechanism in the standard game, including potatoes, sugar beet and beetroot.
 
 ## How the mod works
@@ -65,6 +66,7 @@ Compensation is therefore an estimated value of the potentially lost yield, rath
 | NPC field, AI worker | not via this mod | no | no |
 | NPC field, ‘Crop destruction’ disabled | no | no | no |
 | NPC field, section already destroyed | no new damage | no | no |
+| NPC field, withered crop / `dead` | not via this mod | no | no |
 | NPC field, potatoes | no* | no | no |
 | NPC field, sugar beet | no* | no | no |
 | NPC field, red beetroot | no* | no | no |
@@ -144,14 +146,12 @@ The mod is intended for single-player gameplay. `modDesc.xml` is configured as f
 
 ## Change log
 
-### 1.0.0.0
+### 1.1.1.0
 
-- first version;
-- extended standard crop destruction by wheels to NPC fields;
-- limited functionality to player-controlled vehicles;
-- added compensation calculation based on the area of damage, `literPerSqm` and the current highest selling price;
-- added the `PENALTY_MULTIPLIER` coefficient;
-- added the financial entry ‘NPC crop damage’.
+- detection of the `withered` / `dead` status has been added;
+- withered crops are not included in the damage area;
+- driving exclusively over withered crops does not result in a penalty or a warning being displayed;
+- the additional destruction mechanism on the NPC’s field is not triggered if no living, destructible crops are detected beneath the wheels.
 
 ### 1.1.0.0
 
@@ -160,6 +160,15 @@ The mod is intended for single-player gameplay. `modDesc.xml` is configured as f
 - Added a mechanism to prevent the message from being displayed multiple times by successive wheels and frames;
 - added a configurable `WARNING_RESET_MS`;
 - marked the mod as intended for single-player gameplay.
+
+### 1.0.0.0
+
+- first version;
+- extended standard crop destruction by wheels to NPC fields;
+- limited functionality to player-controlled vehicles;
+- added compensation calculation based on the area of damage, `literPerSqm` and the current highest selling price;
+- added the `PENALTY_MULTIPLIER` coefficient;
+- added the financial entry ‘NPC crop damage’.
 
 ## Screenshots
 

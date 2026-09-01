@@ -16,6 +16,7 @@ Mod został zaprojektowany jako możliwie niewielkie rozszerzenie mechaniki pods
 - ignoruje pracowników AI;
 - respektuje opony pielęgnacyjne / koła, których podstawowa gra nie traktuje jako niszczących uprawy;
 - niszczy tylko te typy i stany wzrostu roślin, które podstawowa gra oznacza jako podatne na zniszczenie przez koła;
+- **nie nalicza odszkodowania za uprawę uschniętą / obumarłą (`withered`, `dead`)**, ponieważ nie przedstawia ona już wartości potencjalnego plonu;
 - nie wymusza niszczenia upraw okopowych, które w standardowej grze nie podlegają temu mechanizmowi, m.in. ziemniaków, buraków cukrowych i buraków czerwonych.
 
 ## Jak działa mod
@@ -80,6 +81,7 @@ Odszkodowanie jest więc szacunkową wartością potencjalnie utraconego plonu, 
 | Pole NPC, pracownik AI | nie przez ten mod | nie | nie |
 | Pole NPC, wyłączone „Niszczenie upraw” | nie | nie | nie |
 | Pole NPC, już zniszczony fragment | brak nowych szkód | nie | nie |
+| Pole NPC, uprawa uschnięta / `dead` | nie przez ten mod | nie | nie |
 | Pole NPC, ziemniaki | nie* | nie | nie |
 | Pole NPC, buraki cukrowe | nie* | nie | nie |
 | Pole NPC, buraki czerwone | nie* | nie | nie |
@@ -160,6 +162,22 @@ Mod jest przeznaczony do gry jednoosobowej. `modDesc.xml` ma ustawione:
 
 ## Historia zmian
 
+### 1.1.1.0
+
+- dodano wykrywanie stanu `withered` / `dead`;
+- uschnięta uprawa nie jest uwzględniana w powierzchni szkód;
+- przejazd wyłącznie po uschniętej uprawie nie powoduje naliczenia kary ani wyświetlenia ostrzeżenia;
+- dodatkowy mechanizm niszczenia na polu NPC nie jest uruchamiany, jeżeli pod kołem nie wykryto żadnej żywej, podatnej na zniszczenie uprawy.
+
+### 1.1.0.0
+
+- dodano ostrzeżenie wyświetlane przy rozpoczęciu faktycznego niszczenia uprawy na polu NPC;
+- dodano tłumaczenie ostrzeżenia na język polski i angielski;
+- dodano mechanizm zapobiegający wielokrotnemu wyświetlaniu komunikatu przez kolejne koła i klatki;
+- dodano konfigurowalny `WARNING_RESET_MS`;
+- dodano pełny plik `README.md`;
+- oznaczono mod jako przeznaczony do gry jednoosobowej.
+
 ### 1.0.0.0
 
 - pierwsza wersja;
@@ -168,11 +186,3 @@ Mod jest przeznaczony do gry jednoosobowej. `modDesc.xml` ma ustawione:
 - dodano naliczanie odszkodowania na podstawie powierzchni szkód, `literPerSqm` oraz najwyższej aktualnej ceny sprzedaży;
 - dodano współczynnik `PENALTY_MULTIPLIER`;
 - dodano wpis finansowy „Szkody w uprawach NPC” / „NPC crop damage”.
-
-### 1.1.0.0
-
-- dodano ostrzeżenie wyświetlane przy rozpoczęciu faktycznego niszczenia uprawy na polu NPC;
-- dodano tłumaczenie ostrzeżenia na język polski i angielski;
-- dodano mechanizm zapobiegający wielokrotnemu wyświetlaniu komunikatu przez kolejne koła i klatki;
-- dodano konfigurowalny `WARNING_RESET_MS`;
-- oznaczono mod jako przeznaczony do gry jednoosobowej.

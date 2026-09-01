@@ -154,9 +154,24 @@ local function getFruitAreaTool(fruitDesc)
         fruitDesc.maxWheelDestructionState
     )
 
+    local witheredFilter = nil
+    if fruitDesc.witheredState ~= nil then
+        witheredFilter = DensityMapFilter.new(
+            fruitDesc.terrainDataPlaneId,
+            fruitDesc.startStateChannel,
+            fruitDesc.numStateChannels
+        )
+
+        witheredFilter:setValueCompareParams(
+            DensityValueCompareType.EQUAL,
+            fruitDesc.witheredState
+        )
+    end
+
     tool = {
         modifier = modifier,
-        filter = filter
+        filter = filter,
+        witheredFilter = witheredFilter
     }
 
     NPCCropDamage.fruitAreaTools[fruitTypeIndex] = tool
@@ -273,9 +288,22 @@ local function calculateDamageCost(x0, z0, x1, z1, x2, z2)
             local _, numPixels, _ = tool.modifier:executeGet(tool.filter)
             numPixels = numPixels or 0
 
-            if numPixels > 0 then
+            -- Some fruit definitions include the withered/dead state inside the
+            -- broad wheel-destructible state range. A dead crop has no remaining
+            -- harvest value, so it must not generate compensation or warnings.
+            -- Count the explicitly defined withered state separately and remove
+            -- those pixels from the chargeable area.
+            local witheredPixels = 0
+            if tool.witheredFilter ~= nil then
+                local _, numWitheredPixels, _ = tool.modifier:executeGet(tool.witheredFilter)
+                witheredPixels = numWitheredPixels or 0
+            end
+
+            local chargeablePixels = math.max(numPixels - witheredPixels, 0)
+
+            if chargeablePixels > 0 then
                 local areaSqm = MathUtil.areaToHa(
-                    numPixels,
+                    chargeablePixels,
                     g_currentMission:getFruitPixelsToSqm()
                 ) * 10000
 
@@ -299,6 +327,14 @@ local function calculateDamageCost(x0, z0, x1, z1, x2, z2)
                     pricePerLiter,
                     cost
                 )
+
+                if witheredPixels > 0 then
+                    debugPrint(
+                        "%s: ignored %d withered/dead pixel(s)",
+                        tostring(fruitDesc.name),
+                        witheredPixels
+                    )
+                end
             end
         end
     end
@@ -411,17 +447,18 @@ function NPCCropDamage.onWheelDestructionUpdate(wheelDestruction, dt, allowFolia
             -- Measure the still-destructible crop BEFORE changing its state.
             local cost, damagedAreaSqm = calculateDamageCost(x0, z0, x1, z1, x2, z2)
 
-            -- Reuse GIANTS' own wheel-destruction function so fruit states,
-            -- field restrictions and map-specific fruit definitions are handled
-            -- in the same way as vanilla crop destruction.
-            wheelDestruction:destroyFruitArea(x0, z0, x1, z1, x2, z2)
-
             if damagedAreaSqm > 0 then
-                showDamageWarning(vehicle)
-            end
+                -- Reuse GIANTS' own wheel-destruction function only when the
+                -- footprint contains a living crop that can actually generate
+                -- damage. This prevents a purely withered/dead patch from being
+                -- treated as a new NPC crop-damage event.
+                wheelDestruction:destroyFruitArea(x0, z0, x1, z1, x2, z2)
 
-            if cost > 0 then
-                addPendingCost(getActiveFarmId(vehicle), cost)
+                showDamageWarning(vehicle)
+
+                if cost > 0 then
+                    addPendingCost(getActiveFarmId(vehicle), cost)
+                end
             end
         end
     end

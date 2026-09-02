@@ -160,6 +160,8 @@ Mod jest przeznaczony do gry jednoosobowej. `modDesc.xml` ma ustawione:
 <multiplayer supported="false"/>
 ```
 
+**UWAGA! Mod nie jest zgodny z [Crop Destruction Overhaul](https://www.farming-simulator.com/mod.php?mod_id=356527&title=fs2025).**
+
 ## Historia zmian
 
 ### 1.1.1.0

@@ -144,6 +144,8 @@ The mod is intended for single-player gameplay. `modDesc.xml` is configured as f
 <multiplayer supported="false"/>
 ```
 
+**PLEASE NOTE! This mod is not compatible with [Crop Destruction Overhaul](https://www.farming-simulator.com/mod.php?mod_id=356527&title=fs2025).**
+
 ## Change log
 
 ### 1.1.1.0

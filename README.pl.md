@@ -16,7 +16,7 @@ Mod został zaprojektowany jako możliwie niewielkie rozszerzenie mechaniki pods
 - ignoruje pracowników AI;
 - respektuje opony pielęgnacyjne / koła, których podstawowa gra nie traktuje jako niszczących uprawy;
 - niszczy tylko te typy i stany wzrostu roślin, które podstawowa gra oznacza jako podatne na zniszczenie przez koła;
-- **nie nalicza odszkodowania za uprawę uschniętą / obumarłą (`withered`, `dead`)**, ponieważ nie przedstawia ona już wartości potencjalnego plonu;
+- niszczy pod kołami uprawę uschniętą / obumarłą (`withered`, `dead`), ale **nie nalicza za nią odszkodowania**, ponieważ nie przedstawia ona już wartości potencjalnego plonu;
 - nie wymusza niszczenia upraw okopowych, które w standardowej grze nie podlegają temu mechanizmowi, m.in. ziemniaków, buraków cukrowych i buraków czerwonych.
 
 ## Jak działa mod
@@ -81,7 +81,7 @@ Odszkodowanie jest więc szacunkową wartością potencjalnie utraconego plonu, 
 | Pole NPC, pracownik AI | nie przez ten mod | nie | nie |
 | Pole NPC, wyłączone „Niszczenie upraw” | nie | nie | nie |
 | Pole NPC, już zniszczony fragment | brak nowych szkód | nie | nie |
-| Pole NPC, uprawa uschnięta / `dead` | nie przez ten mod | nie | nie |
+| Pole NPC, uprawa uschnięta / `dead` | tak | nie | nie |
 | Pole NPC, ziemniaki | nie* | nie | nie |
 | Pole NPC, buraki cukrowe | nie* | nie | nie |
 | Pole NPC, buraki czerwone | nie* | nie | nie |
@@ -163,6 +163,11 @@ Mod jest przeznaczony do gry jednoosobowej. `modDesc.xml` ma ustawione:
 **UWAGA! Mod nie jest zgodny z [Crop Destruction Overhaul](https://www.farming-simulator.com/mod.php?mod_id=356527&title=fs2025).**
 
 ## Historia zmian
+
+### 1.1.2.0
+
+- uschnięte uprawy na polach NPC są teraz niszczone podczas przejazdu;
+- uschnięte uprawy nadal nie są objęte odszkodowaniem i nie wywołują ostrzeżenia o szkodach.
 
 ### 1.1.1.0
 

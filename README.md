@@ -15,7 +15,7 @@ The mod has been designed to be as minimal an extension of the base game’s mec
 - it ignores AI workers;
 - it respects maintenance tyres / wheels that the base game does not treat as damaging to crops;
 - it destroys only those types and growth stages of crops that the base game designates as susceptible to damage from wheels;
-- **does not calculate damage for withered or dead crops (`withered`, `dead`)**, as these no longer represent the value of a potential harvest;
+- destroys withered or dead crops (`withered`, `dead`) under the wheels, but **does not calculate compensation for them**, as they no longer represent the value of a potential harvest;
 - it does not force the destruction of root crops that are not subject to this mechanism in the standard game, including potatoes, sugar beet and beetroot.
 
 ## How the mod works
@@ -66,7 +66,7 @@ Compensation is therefore an estimated value of the potentially lost yield, rath
 | NPC field, AI worker | not via this mod | no | no |
 | NPC field, ‘Crop destruction’ disabled | no | no | no |
 | NPC field, section already destroyed | no new damage | no | no |
-| NPC field, withered crop / `dead` | not via this mod | no | no |
+| NPC field, withered crop / `dead` | yes | no | no |
 | NPC field, potatoes | no* | no | no |
 | NPC field, sugar beet | no* | no | no |
 | NPC field, red beetroot | no* | no | no |
@@ -147,6 +147,11 @@ The mod is intended for single-player gameplay. `modDesc.xml` is configured as f
 **PLEASE NOTE! This mod is not compatible with [Crop Destruction Overhaul](https://www.farming-simulator.com/mod.php?mod_id=356527&title=fs2025).**
 
 ## Change log
+
+### 1.1.2.0
+
+- withered crops on NPC fields are now destroyed when driven over;
+- withered crops remain excluded from compensation and do not trigger the damage warning.
 
 ### 1.1.1.0
 

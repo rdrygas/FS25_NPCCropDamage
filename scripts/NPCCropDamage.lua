@@ -269,6 +269,7 @@ end
 local function calculateDamageCost(x0, z0, x1, z1, x2, z2)
     local totalCost = 0
     local totalAreaSqm = 0
+    local witheredFruitDescs = {}
     local candidates = getFruitCandidates(x0, z0, x1, z1, x2, z2)
 
     for _, fruitDesc in pairs(candidates) do
@@ -297,9 +298,20 @@ local function calculateDamageCost(x0, z0, x1, z1, x2, z2)
             if tool.witheredFilter ~= nil then
                 local _, numWitheredPixels, _ = tool.modifier:executeGet(tool.witheredFilter)
                 witheredPixels = numWitheredPixels or 0
+
+                if witheredPixels > 0 then
+                    table.insert(witheredFruitDescs, fruitDesc)
+                end
             end
 
-            local chargeablePixels = math.max(numPixels - witheredPixels, 0)
+            local witheredIsInDestructibleRange = fruitDesc.witheredState ~= nil
+                and fruitDesc.witheredState >= fruitDesc.minWheelDestructionState
+                and fruitDesc.witheredState <= fruitDesc.maxWheelDestructionState
+            local chargeablePixels = numPixels
+
+            if witheredIsInDestructibleRange then
+                chargeablePixels = math.max(chargeablePixels - witheredPixels, 0)
+            end
 
             if chargeablePixels > 0 then
                 local areaSqm = MathUtil.areaToHa(
@@ -328,18 +340,36 @@ local function calculateDamageCost(x0, z0, x1, z1, x2, z2)
                     cost
                 )
 
-                if witheredPixels > 0 then
-                    debugPrint(
-                        "%s: ignored %d withered/dead pixel(s)",
-                        tostring(fruitDesc.name),
-                        witheredPixels
-                    )
-                end
+            end
+
+            if witheredPixels > 0 then
+                debugPrint(
+                    "%s: destroying %d withered/dead pixel(s) without compensation",
+                    tostring(fruitDesc.name),
+                    witheredPixels
+                )
             end
         end
     end
 
-    return totalCost, totalAreaSqm
+    return totalCost, totalAreaSqm, witheredFruitDescs
+end
+
+-- Destroy explicitly withered crop without including it in compensation.
+-- The base-game wheel destruction range does not necessarily include this state.
+local function destroyWitheredCrops(witheredFruitDescs, x0, z0, x1, z1, x2, z2)
+    for _, fruitDesc in ipairs(witheredFruitDescs) do
+        local tool = getFruitAreaTool(fruitDesc)
+        if tool ~= nil and tool.witheredFilter ~= nil then
+            tool.modifier:setParallelogramWorldCoords(
+                x0, z0,
+                x1, z1,
+                x2, z2,
+                DensityCoordType.POINT_POINT_POINT
+            )
+            tool.modifier:executeSet(fruitDesc.wheelDestructionState, tool.witheredFilter)
+        end
+    end
 end
 
 -- Add the cost to the pending costs for the given farm. 
@@ -445,19 +475,24 @@ function NPCCropDamage.onWheelDestructionUpdate(wheelDestruction, dt, allowFolia
 
         if isNpcFieldAtWorldPosition(x0, z0) then
             -- Measure the still-destructible crop BEFORE changing its state.
-            local cost, damagedAreaSqm = calculateDamageCost(x0, z0, x1, z1, x2, z2)
+            local cost, damagedAreaSqm, witheredFruitDescs = calculateDamageCost(
+                x0, z0,
+                x1, z1,
+                x2, z2
+            )
 
-            if damagedAreaSqm > 0 then
-                -- Reuse GIANTS' own wheel-destruction function only when the
-                -- footprint contains a living crop that can actually generate
-                -- damage. This prevents a purely withered/dead patch from being
-                -- treated as a new NPC crop-damage event.
+            if damagedAreaSqm > 0 or #witheredFruitDescs > 0 then
                 wheelDestruction:destroyFruitArea(x0, z0, x1, z1, x2, z2)
+                destroyWitheredCrops(witheredFruitDescs, x0, z0, x1, z1, x2, z2)
 
-                showDamageWarning(vehicle)
+                -- Withered crop is destroyed, but it has no harvest value and
+                -- therefore causes neither a warning nor a financial penalty.
+                if damagedAreaSqm > 0 then
+                    showDamageWarning(vehicle)
 
-                if cost > 0 then
-                    addPendingCost(getActiveFarmId(vehicle), cost)
+                    if cost > 0 then
+                        addPendingCost(getActiveFarmId(vehicle), cost)
+                    end
                 end
             end
         end
